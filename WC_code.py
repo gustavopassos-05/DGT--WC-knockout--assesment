@@ -1,47 +1,60 @@
-# football = {"NZ":6.9,"Belgium":81,"Egypt":33.9,"IR Iran":38.2}
-# print(football)
-
-# test = easygui.buttonbox("Who will win?", choices = ["NZ", "Belgium"])
-# football.pop(test)
-# print(football)
-
-# new_team = easygui.enterbox("What country do you want to add?")
-# new_percentage = float(easygui.enterbox("What is their percentage chances?"))
-# football[new_team]=new_percentage
-# print(football)
-
-# def hello(name):
-# print(f"good day to you {name}")
- # hello("gustavo")
 
 
 import easygui
 
+
+# Dictionary.
 groups = {
-    "A":{"Mexico":0, "Korea_Republic":0, "France":0, "South Africa":0},
-    "B":{"Canada":0, "Switzerland":0, "Norway":0, "Argentina":0}, 
-    "C":{"Brazil":0, "Marocco":0, "Scotland":0, "Portugal":0},
-    "D":{"USA":0,"Australia":0,"Paraguay":0,"Colombia":0},
-    "E":{"Germany":0, "England":0, "Ecuador":0, "Curacao":0},
-    "F":{"Netherlands":0, "Japan":0, "Sweden":0, "Croatia":0},
-    "G":{"Egypt":0, "IR Iran":0, "Belgium":0, "New Zealand":0},
-    "H":{"Spain":0, "Uruguay":0, "Cabo Verde":0, "Saudi Arabia":0},
+    "A":{"Mexico":3.5, "Korea_Republic":0.30, "France":14.26, 
+         "South Africa":0.10},
+    "B":{"Canada":0.40, "Switzerland":1.20, "Norway":3.50, "Argentina":10.40}, 
+    "C":{"Brazil":6.60, "Marocco":1.10, "Scotland":0.20, "Portugal":7.00},
+    "D":{"USA":1.20,"Australia":0.30,"Paraguay":0.30,"Colombia":0.60},
+    "E":{"Germany":5.00, "England":11.2, "Ecuador":1.40, "Curacao":0.01},
+    "F":{"Netherlands":6.00, "Japan":1.70, "Sweden":0.60, "Croatia":0.70},
+    "G":{"Egypt":0.10, "IR Iran":0.10, "Belgium":2.40, "New Zealand":0.01},
+    "H":{"Spain":9.80, "Uruguay":0.70, "Cabo Verde":0.02, "Saudi Arabia":0.10},
 }
 
+easygui.msgbox("""Hi. This program is based on a knockout system of countries 
+participating in the FIFA 2026 World Cup, having five stages: Group Stage,
+Round of 16, Quarterfinals, Semifinals, and Final.\n\n 
 
+At the end of each stage,a list of the countries that you chose before will 
+appear, meaning that those countries have advanced to the next stage. \n\n
+
+What you need to do is simple in this program, will appear, informations like 
+the Group, Match number, percentage of win in 2026 Wolrd Cup, and both teams 
+that will face each other. You will click on one of the two boxes at the bottom 
+in the middle of the program and choose who will win between those two 
+countries. This process will continue until the Final that you will choose 
+one of the two to be the FIFA 2026 World Cup winner.""")
+
+def get_percentage(team):
+    for group in groups.values():
+        if team in group:
+            return group[team]
+
+# Code to play a Match
 def play_match(team1, team2, title):
+
+    percentage1 = get_percentage(team1)
+    percentage2 = get_percentage(team2)
 
     winner = easygui.buttonbox(
         title="2026 FIFA Wolrd Cup",
-        msg=title,
+        msg=f"""{title}
+
+{team1}: {percentage1}%
+
+VS 
+
+{team2}: {percentage2}%""",
         choices=[team1, team2]
     )
-    # add one to the dictionary value for that team here
-    
-   
 
     return winner
-
+# code to play the group stage.
 def play_group(group_name):
 
     teams = list(groups[group_name].keys())
@@ -56,20 +69,14 @@ def play_group(group_name):
         team2 = teams[i+1]
 
         winner = play_match(
-            team1,
+            team1,  
             team2,
             f"""
 Group {group_name}
 
 Match {match_number}
-
-{team1}
-
-VS
-
-{team2}
 """
-        )
+)
 
         winners.append(winner)
 
@@ -77,6 +84,7 @@ VS
 
     return winners
 
+# List containing all countries who passed to the Knokkout stage.
 def show_teams(team_list, title, message):
     teams_formatted_list = "\n".join(
         [f" - {team}" for team in team_list]
@@ -89,12 +97,13 @@ def show_teams(team_list, title, message):
     
 qualified_teams = []
 
+# Code to play Knockout.
 def play_knockout(team_list):
-
+    """this is a docstring and should explain what the function does"""
     winners = []
 
     match = 1
-
+    # Code containing variables to create a loop.
     for i in range(0, len(team_list), 2):
 
         team1 = team_list[i]
@@ -107,14 +116,8 @@ def play_knockout(team_list):
 Knockout
 
 Match {match}
-
-{team1}
-
-VS
-
-{team2}
-""",
-        )
+"""
+)
 
         winners.append(winner)
 
@@ -122,65 +125,89 @@ VS
 
     return winners
 
-qualified_teams = []
+def main():
 
-for group in groups:
-    winners = play_group(group)
-    qualified_teams.extend(winners)
+    while True:
 
-teams_formatted_list = "\n".join(
-    [f"- {team}" for team in qualified_teams]
-)
+        qualified_teams = []
 
-easygui.msgbox(
-    msg=f"The following team have qualified for the Round of 16: \n\n{teams_formatted_list}",
-    title="Round of 16"
-)
+        for group in groups:
+            winners = play_group(group)
+            qualified_teams.extend(winners)
 
-current_round = play_knockout(qualified_teams)
+# List for the countries who have qualified for the round of 16.
 
-teams_formatted_list = "\n".join(
-    [f"-{team}" for team in current_round]
-)
+        teams_formatted_list = "\n".join(
+        [f"- {team}" for team in qualified_teams]
+        )
 
-easygui.msgbox(
-    msg=f"The following teams have qualified for the Quarterfinals:\n\n{teams_formatted_list}",   
-)
+        easygui.msgbox(
+            msg=f"""The following teams have qualified for the 
+            Round of 16: \n\n{teams_formatted_list}
+            """)
 
-current_round = play_knockout(current_round)
+        current_round = play_knockout(qualified_teams)
 
-teams_formatted_list = "\n".join(
-    [f"- {team}" for team in current_round]
-)
+# List for the countries who have qualified for the quarterfinals.
 
-easygui.msgbox(
-    msg=f"The following teaams have qualified for the Semifinals:\n\n{teams_formatted_list}",
-    title="Semifinals"
-)
+        teams_formatted_list = "\n".join(
+            [f"-{team}" for team in current_round]
+        )
 
-current_round = play_knockout(current_round)
+        easygui.msgbox(
+            msg=f"""The following teams have qualified for the 
+            Quarterfinals:\n\n{teams_formatted_list}   
+        """)
 
-teams_formatted_list = "\n".join(
-    [f"- {team}" for team in current_round]
-)
+        current_round = play_knockout(current_round)
 
-easygui.msgbox(
-    msg=f"The following teams have qualified for the Final:\n\n{teams_formatted_list}",
-    title="Final"
-)
+# List for the countries who have qualified for the Semifinals.
 
-current_round = play_knockout(current_round)
+        teams_formatted_list = "\n".join(
+            [f"- {team}" for team in current_round]
+        )
 
-easygui.msgbox(
+        easygui.msgbox(
+            msg=f"""The following teams have qualified for the 
+            Semifinals:\n\n{teams_formatted_list}
+        """)
 
-    f"""
+        current_round = play_knockout(current_round)
 
-WOLRD CHAMPION
+# List for the countries who have qualified for the finals.
 
-{current_round[0]}
+        teams_formatted_list = "\n".join(
+            [f"- {team}" for team in current_round]
+        )
 
-"""
-)
+        easygui.msgbox(
+            msg=f"""The following teams have qualified for the 
+            Final:\n\n{teams_formatted_list}
+        """)
 
+        current_round = play_knockout(current_round)
 
+# will show what country is the World Cup Champion.
+        easygui.msgbox(
+        f"""
 
+        WORLD CHAMPION
+
+        {current_round[0]}
+
+        """
+        )
+
+        choice = easygui.buttonbox(
+            msg="Thank you for playing!\n\nWould you like to play again?",
+            title="Wolrd Cup Knockout",
+            choices=["Replay", "Exit"]
+        )
+
+        if choice == "Replay":
+            continue
+
+        else:
+            break
+        
+main()
